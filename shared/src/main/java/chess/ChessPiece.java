@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -34,10 +35,31 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "pieceColor=" + pieceColor +
-                ", type=" + type +
-                '}';
+        String result = "";
+        if (this.type == PieceType.KING) {
+            result = "k";
+        } else if (this.type == PieceType.QUEEN) {
+            result = "q";
+        } else if (this.type == PieceType.BISHOP) {
+        result = "b";
+        } else if (this.type == PieceType.KNIGHT) {
+            result = "n";
+        } else if (this.type == PieceType.ROOK) {
+            result = "r";
+        } else if (this.type == PieceType.PAWN) {
+            result = "p";
+        } else {
+            return "ChessPiece{" +
+                    "pieceColor=" + pieceColor +
+                    ", type=" + type +
+                    '}';
+        }
+
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            return result.toUpperCase(Locale.ROOT);
+        } else {
+            return result;
+        }
     }
 
     /**
