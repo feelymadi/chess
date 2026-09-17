@@ -9,20 +9,24 @@ package chess;
 public class ChessBoard {
     private String name;
     char[][] board;
+    int boardHeight;
+    int boardWidth;
 
     public ChessBoard() {
-        board = new char[9][9];
+        boardHeight = 9;
+        boardWidth = 9;
+        board = new char[boardHeight][boardWidth];
     }
 
     @Override
     public String toString() {
         String result = "";
-        for (int y = 1; y < 9; y++){
-            for (int x = 1; x < 9; x++){
-                if (this.board[x][y] == '\0') {
+        for (int row = boardHeight - 1; row >= 1; row--){
+            for (int col = 1; col < boardWidth; col++){
+                if (this.board[row][col] == '\0') {
                     result += "| ";
                 } else {
-                    result += "|" + this.board[x][y];
+                    result += "|" + this.board[row][col];
                 }
             }
             result += "|\n";
@@ -30,13 +34,30 @@ public class ChessBoard {
         return result;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        if ((this.boardWidth != that.boardWidth) || (this.boardHeight != that.boardHeight)){
+            return false;
+        }
+        for (int row = 1; row < this.boardHeight; row++){
+            for (int col = 1; col < this.boardWidth; col++){
+                if (this.board[row][col] != that.board[row][col]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-    /**
-     * Adds a chess piece to the chessboard
-     *
-     * @param position where to add the piece to
-     * @param piece    the piece to add
-     */
+        /**
+         * Adds a chess piece to the chessboard
+         *
+         * @param position where to add the piece to
+         * @param piece    the piece to add
+         */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         throw new RuntimeException("Not implemented");
     }
