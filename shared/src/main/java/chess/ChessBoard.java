@@ -86,6 +86,30 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+        ChessBoard newBoard = new ChessBoard();
+
+        // white pawns
+        for (int col = 0; col < boardWidth; col++) {
+            newBoard.addPiece(new ChessPosition(2,col), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+        }
+        // black pawns
+        for (int col = 0; col < boardWidth; col++) {
+            newBoard.addPiece(new ChessPosition(boardHeight-2,col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
+
+        //
+
+        new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN)
+
+
+
+
+
+
+
         this.board = new ChessPiece[boardHeight][boardWidth];
+
     }
+
+
 }
