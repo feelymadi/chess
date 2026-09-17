@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -56,7 +57,12 @@ public class ChessBoard {
         return true;
     }
 
-        /**
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, Arrays.deepHashCode(board), boardHeight, boardWidth);
+    }
+
+    /**
          * Adds a chess piece to the chessboard
          *
          * @param position where to add the piece to
@@ -97,18 +103,43 @@ public class ChessBoard {
             newBoard.addPiece(new ChessPosition(boardHeight-2,col), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
 
-        //
+        // white rooks
+        newBoard.addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+        newBoard.addPiece(new ChessPosition(1,boardWidth-1), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
 
-        new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN)
+        // black rooks
+        newBoard.addPiece(new ChessPosition(boardHeight-1,1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+        newBoard.addPiece(new ChessPosition(boardHeight-1,boardWidth-1), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
 
+        // white Knights
+        newBoard.addPiece(new ChessPosition(1,2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+        newBoard.addPiece(new ChessPosition(1,boardWidth-2), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
 
+        // black Knights
+        newBoard.addPiece(new ChessPosition(boardHeight-1,2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+        newBoard.addPiece(new ChessPosition(boardHeight-1,boardWidth-2), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
 
+        // white bishops
+        newBoard.addPiece(new ChessPosition(1,3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+        newBoard.addPiece(new ChessPosition(1,boardWidth-3), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
 
+        // black bishops
+        newBoard.addPiece(new ChessPosition(boardHeight-1,3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+        newBoard.addPiece(new ChessPosition(boardHeight-1,boardWidth-3), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
 
+        // white king
+        newBoard.addPiece(new ChessPosition(1,boardWidth-4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
 
+        // black king
+        newBoard.addPiece(new ChessPosition(boardHeight-1,boardWidth-4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
 
-        this.board = new ChessPiece[boardHeight][boardWidth];
+        // white queen
+        newBoard.addPiece(new ChessPosition(1,4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
 
+        // black queen
+        newBoard.addPiece(new ChessPosition(boardHeight-1,4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+
+        this.board = newBoard.board;
     }
 
 
