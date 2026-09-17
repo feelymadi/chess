@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -8,14 +10,14 @@ package chess;
  */
 public class ChessBoard {
     private String name;
-    char[][] board;
+    ChessPiece[][] board;
     int boardHeight;
     int boardWidth;
 
     public ChessBoard() {
         boardHeight = 9;
         boardWidth = 9;
-        board = new char[boardHeight][boardWidth];
+        board = new ChessPiece[boardHeight][boardWidth];
     }
 
     @Override
@@ -23,10 +25,10 @@ public class ChessBoard {
         String result = "";
         for (int row = boardHeight - 1; row >= 1; row--){
             for (int col = 1; col < boardWidth; col++){
-                if (this.board[row][col] == '\0') {
+                if (this.board[row][col] == null) {
                     result += "| ";
                 } else {
-                    result += "|" + this.board[row][col];
+                    result += "|" + this.board[row][col].toString();
                 }
             }
             result += "|\n";
@@ -44,7 +46,9 @@ public class ChessBoard {
         }
         for (int row = 1; row < this.boardHeight; row++){
             for (int col = 1; col < this.boardWidth; col++){
-                if (this.board[row][col] != that.board[row][col]) {
+                ChessPiece thisPiece = this.board[row][col];
+                ChessPiece thatPiece = that.board[row][col];
+                if (!Objects.equals(thisPiece, thatPiece)) {
                     return false;
                 }
             }
@@ -59,7 +63,9 @@ public class ChessBoard {
          * @param piece    the piece to add
          */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+        this.board[row][col] = piece;
     }
 
     /**
@@ -70,7 +76,9 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        int row = position.getRow();
+        int col = position.getColumn();
+        return this.board[row][col];
     }
 
     /**
@@ -78,6 +86,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        this.board = new ChessPiece[boardHeight][boardWidth];
     }
 }
