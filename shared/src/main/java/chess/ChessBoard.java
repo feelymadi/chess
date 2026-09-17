@@ -7,10 +7,29 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private String name;
+    char[][] board;
 
     public ChessBoard() {
-        
+        board = new char[9][9];
     }
+
+    @Override
+    public String toString() {
+        String result = "";
+        for (int y = 1; y < 9; y++){
+            for (int x = 1; x < 9; x++){
+                if (this.board[x][y] == '\0') {
+                    result += "| ";
+                } else {
+                    result += "|" + this.board[x][y];
+                }
+            }
+            result += "|\n";
+        }
+        return result;
+    }
+
 
     /**
      * Adds a chess piece to the chessboard
