@@ -133,7 +133,7 @@ public class ChessPiece {
             // move forward
             row = myPosition.getRow()+directionFactor;
             col = myPosition.getColumn();
-            if (row >= 1 && row <= board.boardHeight && col >= 1 && col <= board.boardWidth){
+            if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
                 if (board.getPiece(new ChessPosition(row, col)) == null) {
                     movePawn(moves, myPosition, new ChessPosition(row,col), promo);
                 }
@@ -142,7 +142,7 @@ public class ChessPiece {
             //right diagonal
             row = myPosition.getRow()+directionFactor;
             col = myPosition.getColumn()+1;
-            if (row >= 1 && row <= board.boardHeight && col >= 1 && col <= board.boardWidth){
+            if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
                 if (    board.getPiece(new ChessPosition(row, col)) != null
                         && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
                 {
@@ -153,7 +153,7 @@ public class ChessPiece {
             // left diagonal
             row = myPosition.getRow()+directionFactor;
             col = myPosition.getColumn()-1;
-            if (row >= 1 && row <= board.boardHeight && col >= 1 && col <= board.boardWidth){
+            if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
                 if (    board.getPiece(new ChessPosition(row, col)) != null
                         && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
                 {
