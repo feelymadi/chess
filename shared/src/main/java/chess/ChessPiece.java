@@ -100,7 +100,6 @@ public class ChessPiece {
     }
 
 
-
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -128,7 +127,6 @@ public class ChessPiece {
             // possible move
             int row;
             int col;
-
 
             // move forward
             row = myPosition.getRow()+directionFactor;
@@ -169,6 +167,64 @@ public class ChessPiece {
                     || (piece.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == board.boardHeight-2 && board.getPiece(new ChessPosition(row+1,col))==null && board.getPiece(new ChessPosition(row,col))==null)) {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row,col),null));
             }
+        }
+
+        if (piece.getPieceType() == PieceType.ROOK) {
+            // possible move
+            int row;
+            int col;
+
+            // moves right
+            row = myPosition.getRow();
+            for (int x = myPosition.getColumn()+1; x < board.boardWidth; x++) {
+                if (board.getPiece(new ChessPosition(row, x)) == null) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, x), null));
+                } else if (board.getPiece(new ChessPosition(row, x)).getTeamColor() != piece.getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, x), null));
+                    break;
+                } else {
+                    break;
+                }
+            }
+            // moves left
+            row = myPosition.getRow();
+            for (int x = myPosition.getColumn()-1; x > 0; x--) {
+                if (board.getPiece(new ChessPosition(row, x)) == null) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, x), null));
+                } else if (board.getPiece(new ChessPosition(row, x)).getTeamColor() != piece.getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(row, x), null));
+                    break;
+                } else {
+                    break;
+                }
+            }
+
+            // moves up
+            col = myPosition.getColumn();
+            for (int y = myPosition.getRow()+1; y < board.boardHeight; y++) {
+                if (board.getPiece(new ChessPosition(y, col)) == null) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(y, col), null));
+                } else if (board.getPiece(new ChessPosition(y, col)).getTeamColor() != piece.getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(y, col), null));
+                    break;
+                } else {
+                    break;
+                }
+            }
+
+            // moves down
+            col = myPosition.getColumn();
+            for (int y = myPosition.getRow()-1; y > 0; y--) {
+                if (board.getPiece(new ChessPosition(y, col)) == null) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(y, col), null));
+                } else if (board.getPiece(new ChessPosition(y, col)).getTeamColor() != piece.getTeamColor()) {
+                    moves.add(new ChessMove(myPosition, new ChessPosition(y, col), null));
+                    break;
+                } else {
+                    break;
+                }
+            }
+
         }
 
 
