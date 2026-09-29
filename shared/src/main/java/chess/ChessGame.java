@@ -11,9 +11,11 @@ import java.util.Collection;
 public class ChessGame {
     // variable for turn keeping (0 = white)
     int turn;
+    ChessBoard board;
 
     public ChessGame() {
         this.turn = 0;
+        this.board = new ChessBoard();
     }
 
     /**
@@ -106,7 +108,6 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+    public ChessBoard getBoard() { return this.board;
     }
 }
