@@ -87,6 +87,9 @@ public class ChessPiece {
         return this.type;
     }
 
+    // piece move helper functions
+
+    // append pawn move with promotion
     private void movePawn (Collection<ChessMove> moves, ChessPosition start, ChessPosition end, boolean promo){
         PieceType[] promotionPieces = {PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT};
         if (promo){
@@ -99,11 +102,13 @@ public class ChessPiece {
 
     }
 
+    // all possible knight moves
     private static final int[][] knightMoves = {
             {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
             {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
     };
 
+    // all possible king moves
     private static final int[][] kingMoves = {
             {1, 0}, {-1, 0}, {0, 1}, {0, -1},
             {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
@@ -120,6 +125,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         Collection<ChessMove> moves = new ArrayList<>();
+
+        // move pawn
         if (piece.getPieceType() == PieceType.PAWN) {
 
             // set direction factor
@@ -179,6 +186,7 @@ public class ChessPiece {
             }
         }
 
+        // move rook
         if (piece.getPieceType() == PieceType.ROOK) {
             // possible move
             int row;
@@ -237,6 +245,7 @@ public class ChessPiece {
 
         }
 
+        // move bishop
         if (piece.getPieceType() == PieceType.BISHOP) {
             // possible move
             int row;
@@ -307,6 +316,7 @@ public class ChessPiece {
             }
         }
 
+        // move knight
         if (piece.getPieceType() == PieceType.KNIGHT) {
             int row;
             int col;
@@ -325,6 +335,7 @@ public class ChessPiece {
 
         }
 
+        // move king
         if (piece.getPieceType() == PieceType.KING) {
             int row;
             int col;
@@ -342,6 +353,7 @@ public class ChessPiece {
             }
         }
 
+        // move queen
         if (piece.getPieceType() == PieceType.QUEEN) {
             // possible move
             int row;
