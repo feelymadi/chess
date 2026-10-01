@@ -101,9 +101,9 @@ public class ChessGame {
         return null;
     }
 
-    public Collection<ChessMove> teamCaptures(ChessBoard board, TeamColor color){
+    public Collection<ChessPosition> teamCaptures(ChessBoard board, TeamColor color){
         // team moves
-        Collection<ChessMove> moves = new ArrayList<>();
+        Collection<ChessPosition> captures = new ArrayList<>();
 
         // parse board
         for (int row = 1;row < 9;row++) {
@@ -111,11 +111,14 @@ public class ChessGame {
                 ChessPosition pos = new ChessPosition(row,col);
                 if (!(board.getPiece(pos) == null)) {
                     ChessPiece chessPiece = board.getPiece(pos);
-                    moves.addAll(chessPiece.pieceMoves(board,pos));
+                    Collection<ChessMove> moves = chessPiece.pieceMoves(board,pos);
+                    for (ChessMove move : moves){
+                        captures.add(move.getEndPosition());
+                    }
                 }
             }
         }
-    return moves;
+    return captures;
     }
 
 
@@ -132,12 +135,10 @@ public class ChessGame {
         ChessPosition kingPos = kingPosition(teamColor,board);
 
         // chess moves for all opposing pieces
-        Collection<ChessMove> moves = teamCaptures(board,teamColor);
+        Collection<ChessPosition> captures = teamCaptures(board,teamColor);
 
         // if king pos in chess moves true
-        if (moves.contains(kingPos))
-        // else false
-
+        return captures.contains(kingPos);
     }
 
     /**
