@@ -104,6 +104,7 @@ public class ChessGame {
         } else { this.setTeamTurn(TeamColor.WHITE);}
     }
 
+    // return position of specific teams king
     public ChessPosition kingPosition(TeamColor teamColor,ChessBoard board) {
         for (int row = 1;row < 9;row++) {
             for (int col = 1; col < 9;col++){
@@ -118,6 +119,7 @@ public class ChessGame {
         return null;
     }
 
+    // returns to end position of all pieces on specific team
     public Collection<ChessPosition> teamCaptures(ChessBoard board, TeamColor color){
         // team moves
         Collection<ChessPosition> captures = new ArrayList<>();
@@ -126,7 +128,7 @@ public class ChessGame {
         for (int row = 1;row < 9;row++) {
             for (int col = 1; col < 9;col++){
                 ChessPosition pos = new ChessPosition(row,col);
-                if (!(board.getPiece(pos) == null)) {
+                if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == color) {
                     ChessPiece chessPiece = board.getPiece(pos);
                     Collection<ChessMove> moves = chessPiece.pieceMoves(board,pos);
                     for (ChessMove move : moves){
@@ -138,7 +140,11 @@ public class ChessGame {
     return captures;
     }
 
-
+    // makes sure move doesnt expose king
+    public boolean isSafeMove (ChessBoard board, ChessMove move) {
+        ChessBoard boardCopy = board.deepCopy();
+        makeMove
+    }
 
 
     /**
