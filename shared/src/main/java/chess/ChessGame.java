@@ -64,27 +64,44 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece movingPiece;
+
+        // is space empty
         if (board.getPiece(move.getStartPosition()) != null) {
             movingPiece = board.getPiece(move.getStartPosition());
         } else {
             throw new InvalidMoveException("No piece at start position");
         }
-        if (!movingPiece.pieceMoves(board,move.getStartPosition()).contains(move)) {
+
+        // is this pieces turn
+        if (this.getTeamTurn() != movingPiece.pieceColor) {
+            throw new InvalidMoveException("Moving out of turn");
+        }
+
+        // if it cant move to stated location
+        ChessBoard newBoard;
+        if (!movingPiece.pieceMoves(board, move.getStartPosition()).contains(move)) {
             throw new InvalidMoveException("Invalid Move");
         } else {
             // make move
-            ChessBoard newBoard = board.deepCopy();
+            newBoard = board.deepCopy();
             // starting square
-            newBoard.addPiece(move.getStartPosition(),null);
+            newBoard.addPiece(move.getStartPosition(), null);
             // ending square
-            if (move.getPromotionPiece() != null){
+            if (move.getPromotionPiece() != null) {
                 // promo
-                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(),move.getPromotionPiece()));
+                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece()));
             } else {
                 // no promo
-                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(),movingPiece.getPieceType()));
+                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), movingPiece.getPieceType()));
             }
         }
+        // return new board
+        this.board = newBoard;
+
+        // switch turns
+        if (movingPiece.getTeamColor() == TeamColor.WHITE) {
+            this.setTeamTurn(TeamColor.BLACK);
+        } else { this.setTeamTurn(TeamColor.WHITE);}
     }
 
     public ChessPosition kingPosition(TeamColor teamColor,ChessBoard board) {
@@ -168,7 +185,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board.deepCopy();
     }
 
     /**
