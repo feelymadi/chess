@@ -51,7 +51,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        return board.getPiece(startPosition).pieceMoves(board,startPosition);
+        if (board.getPiece(startPosition) != null){
+            return board.getPiece(startPosition).pieceMoves(board,startPosition);
+        } else {return null;}
     }
 
     /**
@@ -61,7 +63,28 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece movingPiece;
+        if (board.getPiece(move.getStartPosition()) != null) {
+            movingPiece = board.getPiece(move.getStartPosition());
+        } else {
+            throw new InvalidMoveException("No piece at start position");
+        }
+        if (!movingPiece.pieceMoves(board,move.getStartPosition()).contains(move)) {
+            throw new InvalidMoveException("Invalid Move");
+        } else {
+            // make move
+            ChessBoard newBoard = board.deepCopy();
+            // starting square
+            newBoard.addPiece(move.getStartPosition(),null);
+            // ending square
+            if (move.getPromotionPiece() != null){
+                // promo
+                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(),move.getPromotionPiece()));
+            } else {
+                // no promo
+                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(),movingPiece.getPieceType()));
+            }
+        }
     }
 
     /**
