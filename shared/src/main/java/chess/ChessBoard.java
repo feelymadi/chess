@@ -79,8 +79,8 @@ public class ChessBoard implements Cloneable{
         // Start with a bitwise copy from Object.clone()
         ChessBoard cloned = (ChessBoard) super.clone();
         // Manually deep copy mutable fields
-        for (int row = 0;row < boardHeight;row++) {
-            for (int col = 0; col < boardWidth;col++){
+        for (int row = 1;row < boardHeight;row++) {
+            for (int col = 1; col < boardWidth;col++){
                 // get piece and clone piece
                 ChessPiece newPiece = new ChessPiece(this.board[row][col].getTeamColor(),this.board[row][col].getPieceType());
                 // put cloned piece in board
