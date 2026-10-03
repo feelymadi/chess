@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -51,9 +52,21 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if (board.getPiece(startPosition) != null){
-            return board.getPiece(startPosition).pieceMoves(board,startPosition);
-        } else {return null;}
+        // check if empty
+        if (board.getPiece(startPosition) == null){
+            return null;
+        }
+
+        // get moves and piece
+        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board,startPosition);
+        ChessPiece movingPiece = board.getPiece(startPosition);
+
+
+        // filter moves
+        // wont endanger king
+        moves.removeIf(move -> !isSafeMove(board, move, movingPiece.getTeamColor(), movingPiece));
+
+        return moves;
     }
 
     /**
@@ -73,7 +86,7 @@ public class ChessGame {
         }
 
         // is this pieces turn
-        if (this.getTeamTurn() != movingPiece.pieceColor) {
+        if (this.getTeamTurn() != movingPiece.getTeamColor()) {
             throw new InvalidMoveException("Moving out of turn");
         }
 
@@ -81,20 +94,26 @@ public class ChessGame {
         ChessBoard newBoard;
         if (!movingPiece.pieceMoves(board, move.getStartPosition()).contains(move)) {
             throw new InvalidMoveException("Invalid Move");
-        } else {
-            // make move
-            newBoard = board.deepCopy();
-            // starting square
-            newBoard.addPiece(move.getStartPosition(), null);
-            // ending square
-            if (move.getPromotionPiece() != null) {
-                // promo
-                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece()));
-            } else {
-                // no promo
-                newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), movingPiece.getPieceType()));
-            }
         }
+
+        // wont endanger king
+        if(!isSafeMove(board, move, movingPiece.getTeamColor(), movingPiece)) {
+            throw new InvalidMoveException("Invalid Move: exposes king");
+        }
+
+        // make move
+        newBoard = board.deepCopy();
+        // starting square
+        newBoard.addPiece(move.getStartPosition(), null);
+        // ending square
+        if (move.getPromotionPiece() != null) {
+            // promo
+            newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece()));
+        } else {
+            // no promo
+            newBoard.addPiece(move.getEndPosition(), new ChessPiece(movingPiece.getTeamColor(), movingPiece.getPieceType()));
+        }
+
         // return new board
         this.board = newBoard;
 
@@ -109,17 +128,20 @@ public class ChessGame {
         for (int row = 1;row < 9;row++) {
             for (int col = 1; col < 9;col++){
                 ChessPosition pos = new ChessPosition(row,col);
-                ChessPiece piece = board.getPiece(pos);
-                if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
-                    return pos;
+                if (board.getPiece(pos) != null) {
+                    ChessPiece piece = board.getPiece(pos);
+                    if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor) {
+                        return pos;
+                    }
                 }
+
             }
         }
         // probably won't happen
         return null;
     }
 
-    // returns to end position of all pieces on specific team
+    // returns end position of all pieces on specific team
     public Collection<ChessPosition> teamCaptures(ChessBoard board, TeamColor color){
         // team moves
         Collection<ChessPosition> captures = new ArrayList<>();
@@ -141,9 +163,43 @@ public class ChessGame {
     }
 
     // makes sure move doesnt expose king
-    public boolean isSafeMove (ChessBoard board, ChessMove move) {
-        ChessBoard boardCopy = board.deepCopy();
-        makeMove
+    public boolean isSafeMove (ChessBoard board, ChessMove move, TeamColor color, ChessPiece piece) {
+        ChessBoard mockBoard = board.deepCopy();
+        ChessPiece mockPiece = new ChessPiece(piece.getTeamColor(), piece.getPieceType());
+        // make move
+        // starting square
+        mockBoard.addPiece(move.getStartPosition(), null);
+        // ending square
+        if (move.getPromotionPiece() != null) {
+            // promo
+            mockBoard.addPiece(move.getEndPosition(), new ChessPiece(mockPiece.getTeamColor(), move.getPromotionPiece()));
+        } else {
+            // no promo
+            mockBoard.addPiece(move.getEndPosition(), new ChessPiece(mockPiece.getTeamColor(), mockPiece.getPieceType()));
+        }
+
+        // is in check
+        // king position
+        ChessPosition kingPos = kingPosition(color,mockBoard);
+
+
+        // chess moves for all opposing pieces
+        Collection<ChessPosition> captures;
+        if (color == TeamColor.WHITE) {
+            captures = teamCaptures(mockBoard,TeamColor.BLACK);
+        } else {
+            captures = teamCaptures(mockBoard,TeamColor.WHITE);
+        }
+
+
+        for (ChessPosition thisMove : captures) {
+            if (thisMove.getRow() == kingPos.getRow() && thisMove.getColumn() == kingPos.getColumn()) {
+                // king in check move not safe
+                return false;
+            }
+        }
+        // king not in check move safe
+        return true;
     }
 
 
@@ -158,10 +214,21 @@ public class ChessGame {
         ChessPosition kingPos = kingPosition(teamColor,board);
 
         // chess moves for all opposing pieces
-        Collection<ChessPosition> captures = teamCaptures(board,teamColor);
+        Collection<ChessPosition> captures;
+        if (teamColor == TeamColor.WHITE) {
+            captures = teamCaptures(board,TeamColor.BLACK);
+        } else {
+            captures = teamCaptures(board,TeamColor.WHITE);
+        }
 
-        // if king pos in chess moves true
-        return captures.contains(kingPos);
+        for (ChessPosition move : captures) {
+            if (move.getRow() == kingPos.getRow() && move.getColumn() == kingPos.getColumn()) {
+                // king in check
+                return true;
+            }
+        }
+        // king not in check
+        return false;
     }
 
     /**
