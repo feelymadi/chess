@@ -19,6 +19,7 @@ public class ChessBoard{
         boardHeight = 9;
         boardWidth = 9;
         board = new ChessPiece[boardHeight][boardWidth];
+
     }
 
     @Override
