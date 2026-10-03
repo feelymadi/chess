@@ -101,7 +101,7 @@ public class GameStatusTests {
                 """));
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
-        Assertions.assertTrue(game.isInCheckmate(ChessGame.TeamColor.WHITE), MISSING_WHITE_CHECKMATE);
+         Assertions.assertTrue(game.isInCheckmate(ChessGame.TeamColor.WHITE), MISSING_WHITE_CHECKMATE);
         Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.BLACK), INCORRECT_BLACK_CHECKMATE);
     }
 

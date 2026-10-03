@@ -203,7 +203,6 @@ public class ChessGame {
         return true;
     }
 
-
     /**
      * Determines if the given team is in check
      *
@@ -244,7 +243,7 @@ public class ChessGame {
             for (int row = 1;row < 9;row++) {
                 for (int col = 1; col < 9;col++){
                     ChessPosition pos = new ChessPosition(row,col);
-                    if (board.getPiece(pos) != null) {
+                    if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor) {
                         if (!validMoves(pos).isEmpty()) {
                             // in check but valid move
                             return false;
@@ -273,7 +272,7 @@ public class ChessGame {
             for (int row = 1;row < 9;row++) {
                 for (int col = 1; col < 9;col++){
                     ChessPosition pos = new ChessPosition(row,col);
-                    if (board.getPiece(pos) != null) {
+                    if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor) {
                         if (!validMoves(pos).isEmpty()) {
                             // in check but valid move
                             return false;
