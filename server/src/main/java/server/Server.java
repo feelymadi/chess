@@ -35,6 +35,8 @@ public class Server {
         // exception handlers
         javalin.exception(BadRequestException.class, (e, ctx) ->
                 ctx.status(400).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
+        javalin.exception(UnauthorizedException.class, (e, ctx) ->
+                ctx.status(401).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
         javalin.exception(AlreadyTakenException.class, (e, ctx) ->
                 ctx.status(403).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
         javalin.exception(DataAccessException.class, (e, ctx) ->
@@ -42,7 +44,7 @@ public class Server {
     }
 
     private void login(Context ctx) throws BadRequestException, UnauthorizedException, DataAccessException {
-        RegisterRequest request = new Gson().fromJson(ctx.body(), LoginRequest.class);
+        LoginRequest request = new Gson().fromJson(ctx.body(), LoginRequest.class);
         if (request == null) {
             throw new BadRequestException("bad request");
         }

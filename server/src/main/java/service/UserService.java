@@ -25,7 +25,7 @@ public class UserService {
         }
 
         if (userDAO.getUser(registerRequest.username()) != null) {
-            throw new BadRequestException("already taken");
+            throw new AlreadyTakenException("already taken");
         }
 
         userDAO.createUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
