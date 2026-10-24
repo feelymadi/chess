@@ -28,9 +28,11 @@ public class Server {
         userService = new UserService(userDAO, authDAO);
 
         // routes
+        javalin.delete("/session", this::logout);
         javalin.post("/session", this::login);
         javalin.post("/user", this::register);
         javalin.delete("/db", this::clear);
+
 
         // exception handlers
         javalin.exception(BadRequestException.class, (e, ctx) ->
@@ -42,6 +44,13 @@ public class Server {
         javalin.exception(DataAccessException.class, (e, ctx) ->
                 ctx.status(500).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
     }
+
+    private void logout(Context ctx) throws UnauthorizedException, DataAccessException {
+        String authToken = ctx.header("authorization");
+        userService.logout(authToken);
+        ctx.status(200).result("{}");
+    }
+
 
     private void login(Context ctx) throws BadRequestException, UnauthorizedException, DataAccessException {
         LoginRequest request = new Gson().fromJson(ctx.body(), LoginRequest.class);

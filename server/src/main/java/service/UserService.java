@@ -19,6 +19,7 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
+    // register helper
     public LoginResult register(RegisterRequest registerRequest) throws BadRequestException, AlreadyTakenException, DataAccessException {
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new BadRequestException("empty request");
@@ -36,6 +37,7 @@ public class UserService {
         return new LoginResult(registerRequest.username(), authToken);
     }
 
+    // login helper
     public LoginResult login(LoginRequest loginRequest) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new BadRequestException("empty request");
@@ -55,6 +57,14 @@ public class UserService {
         } else {
             throw new UnauthorizedException("incorrect password");
         }
+    }
+
+    // logout helper
+    public void logout(String authToken) throws UnauthorizedException, DataAccessException {
+        if (authToken == null || authDAO.getAuth(authToken) == null) {
+            throw new UnauthorizedException("unauthorized");
+        }
+        authDAO.deleteAuth(authToken);
     }
 
 }
