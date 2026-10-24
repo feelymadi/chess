@@ -23,12 +23,12 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-
         // initialize services
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         userService = new UserService(userDAO, authDAO);
 
         // routes
+        javalin.post("/session", this::login);
         javalin.post("/user", this::register);
         javalin.delete("/db", this::clear);
 
@@ -39,6 +39,15 @@ public class Server {
                 ctx.status(403).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
         javalin.exception(DataAccessException.class, (e, ctx) ->
                 ctx.status(500).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
+    }
+
+    private void login(Context ctx) throws BadRequestException, UnauthorizedException, DataAccessException {
+        RegisterRequest request = new Gson().fromJson(ctx.body(), LoginRequest.class);
+        if (request == null) {
+            throw new BadRequestException("bad request");
+        }
+        LoginResult result = userService.login(request);
+        ctx.status(200).result(new Gson().toJson(result));
     }
 
     private void register(Context ctx) throws BadRequestException, AlreadyTakenException, DataAccessException {

@@ -20,7 +20,6 @@ public class UserService {
     }
 
     public LoginResult register(RegisterRequest registerRequest) throws BadRequestException, AlreadyTakenException, DataAccessException {
-
         if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
             throw new BadRequestException("empty request");
         }
@@ -35,6 +34,27 @@ public class UserService {
         authDAO.createAuth(new AuthData(authToken, registerRequest.username()));
 
         return new LoginResult(registerRequest.username(), authToken);
+    }
+
+    public LoginResult login(LoginRequest loginRequest) throws BadRequestException, UnauthorizedException, DataAccessException {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
+            throw new BadRequestException("empty request");
+        }
+
+        UserData user = userDAO.getUser(loginRequest.username());
+
+        if (user == null) {
+            throw new UnauthorizedException("user not found");
+        }
+
+        if (user.password().equals(loginRequest.password())) {
+            String authToken = UUID.randomUUID().toString();
+            authDAO.createAuth(new AuthData(authToken, loginRequest.username()));
+
+            return new LoginResult(loginRequest.username(), authToken);
+        } else {
+            throw new UnauthorizedException("incorrect password");
+        }
     }
 
 }
