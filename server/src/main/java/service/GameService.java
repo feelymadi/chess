@@ -5,7 +5,9 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class GameService {
 
@@ -43,7 +45,12 @@ public class GameService {
 
         Collection<GameData> games = gameDAO.listGames();
 
-        return new ListGamesResult(games);
+        List<GameInfo> gameList = new ArrayList<>();
+        for (GameData game: games) {
+            gameList.add(new GameInfo(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+        }
+
+        return new ListGamesResult(gameList);
     }
 
 
