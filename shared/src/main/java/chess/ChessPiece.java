@@ -251,18 +251,15 @@ public class ChessPiece {
             } else {
                 directionFactor = -1;
             }
-
             // possible promotions
             boolean promo;
             promo = (myPos.getRow() == 2 &&
                     piece.getTeamColor() == ChessGame.TeamColor.BLACK)
                     || (myPos.getRow() == board.boardHeight - 2
                     && piece.getTeamColor() == ChessGame.TeamColor.WHITE);
-
             // possible move
             int row;
             int col;
-
             // move forward
             row = myPos.getRow()+directionFactor;
             col = myPos.getColumn();
@@ -271,21 +268,17 @@ public class ChessPiece {
                     movePawn(moves, myPos, new ChessPosition(row,col), promo);
                 }
             }
-
-            //right diagonal
+            //right then left diagonal
             row = myPos.getRow()+directionFactor;
             col = myPos.getColumn()+1;
             if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
                 pawnDiag(board, moves, myPos, piece, row, col, promo);
             }
-
-            // left diagonal
             row = myPos.getRow()+directionFactor;
             col = myPos.getColumn()-1;
             if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
                 pawnDiag(board, moves, myPos, piece, row, col, promo);
             }
-
             // first move
             row = myPos.getRow()+(2*directionFactor);
             col = myPos.getColumn();
