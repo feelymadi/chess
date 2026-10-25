@@ -36,6 +36,7 @@ public class Server {
         javalin.delete("/session", this::logout);
         javalin.post("/game", this::createGame);
         javalin.get("/game", this::listGames);
+        javalin.put("/game", this::joinGame);
         javalin.delete("/db", this::clear);
 
 
@@ -93,8 +94,16 @@ public class Server {
         ctx.status(200).result(new Gson().toJson(games));
     }
 
-
-
+    private void joinGame(Context ctx) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {
+        String authToken = ctx.header("authorization");
+        JoinGameRequest body = new Gson().fromJson(ctx.body(), JoinGameRequest.class);
+        if (body == null) {
+            throw new BadRequestException("bad request");
+        }
+        JoinGameRequest request = new JoinGameRequest(authToken, body.playerColor(), body.gameID());
+        gameService.join(request);
+        ctx.status(200).result("{}");
+    }
 
     private void clear(Context ctx) throws DataAccessException{
         clearService.clear();

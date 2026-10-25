@@ -44,8 +44,8 @@ public class GameService {
         }
 
         Collection<GameData> games = gameDAO.listGames();
-
         List<GameInfo> gameList = new ArrayList<>();
+
         for (GameData game: games) {
             gameList.add(new GameInfo(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
         }
@@ -60,27 +60,30 @@ public class GameService {
         }
 
         String user = authDAO.getAuth(joinGameRequest.authToken()).username();
+        String playerColor = joinGameRequest.playerColor();
+        GameData game = gameDAO.getGame(joinGameRequest.gameID());
+        GameData updatedGame;
 
         if (joinGameRequest.gameID() == null || gameDAO.getGame(joinGameRequest.gameID()) == null) {
             throw new BadRequestException("bad request");
         }
 
-        if (!"WHITE".equals(joinGameRequest.playerColor()) && !"BLACK".equals(joinGameRequest.playerColor())) {
+        if (!"WHITE".equals(playerColor) && !"BLACK".equals(playerColor)) {
             throw new BadRequestException("bad request");
         }
 
-        GameData game = gameDAO.getGame(joinGameRequest.gameID());
-        GameData updatedGame;
+        if ("WHITE".equals(playerColor) && game.whiteUsername() != null){
+            throw new AlreadyTakenException("white already taken");
+        } else if ("BLACK".equals(playerColor) && game.blackUsername() != null){
+            throw new AlreadyTakenException("black already taken");
+        }
 
-        if ("WHITE".equals(joinGameRequest.playerColor())) {
+        if ("WHITE".equals(playerColor)) {
             updatedGame = new GameData(joinGameRequest.gameID(), user, game.blackUsername(), game.gameName(), game.game());
         } else {
             updatedGame = new GameData(joinGameRequest.gameID(), game.whiteUsername(), user, game.gameName(), game.game());
         }
 
         gameDAO.replaceGame(updatedGame);
-
     }
-
-
 }
