@@ -35,6 +35,7 @@ public class Server {
         javalin.post("/session", this::login);
         javalin.delete("/session", this::logout);
         javalin.post("/game", this::createGame);
+        javalin.get("/game", this::listGames);
         javalin.delete("/db", this::clear);
 
 
@@ -83,6 +84,17 @@ public class Server {
         CreateGameResult result = gameService.create(request);
         ctx.status(200).result(new Gson().toJson(result));
     }
+
+    private void listGames(Context ctx) throws UnauthorizedException, DataAccessException {
+        String authToken = ctx.header("authorization");
+
+        ListGamesResult games = gameService.list(authToken);
+
+        ctx.status(200).result(new Gson().toJson(games));
+    }
+
+
+
 
     private void clear(Context ctx) throws DataAccessException{
         clearService.clear();

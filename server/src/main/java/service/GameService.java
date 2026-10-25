@@ -5,6 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
 
+import java.util.Collection;
+
 public class GameService {
 
     // initializes
@@ -33,8 +35,17 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-
     // list
+    public ListGamesResult list(String authToken) throws UnauthorizedException, DataAccessException {
+        if (authDAO.getAuth(authToken) == null) {
+            throw new UnauthorizedException("unauthorized");
+        }
+
+        Collection<GameData> games = gameDAO.listGames();
+
+        return new ListGamesResult(games);
+    }
+
 
     // join
 
