@@ -1,4 +1,4 @@
-package service;
+package service.exceptions;
 
 public class UnknownUserException extends RuntimeException {
     public UnknownUserException(String message) {
