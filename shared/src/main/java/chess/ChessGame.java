@@ -2,7 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -226,6 +225,19 @@ public class ChessGame {
         return true;
     }
 
+    private boolean hasValidMove(ChessGame.TeamColor teamColor){
+        for (int row = 1;row < 9;row++) {
+            for (int col = 1; col < 9;col++){
+                ChessPosition pos = new ChessPosition(row,col);
+                if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        // in check and no valid moves
+        return false;
+    }
+
     /**
      * Determines if the given team is in check
      *
@@ -262,16 +274,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // if is in check and no valid move
-        if(isInCheck(teamColor)) {
-            for (int row = 1;row < 9;row++) {
-                for (int col = 1; col < 9;col++){
-                    ChessPosition pos = new ChessPosition(row,col);
-                    if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                        return false;
-                    }
-
-                }
-            }
+        if(isInCheck(teamColor) && !hasValidMove(teamColor)) {
             // in check and no valid moves
             return true;
         }
@@ -288,16 +291,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // if is in check and no valid move
-        if(!isInCheck(teamColor)) {
-            for (int row = 1;row < 9;row++) {
-                for (int col = 1; col < 9;col++){
-                    ChessPosition pos = new ChessPosition(row,col);
-                    if (board.getPiece(pos) != null && board.getPiece(pos).getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-            // no valid moves
+        if(!isInCheck(teamColor) && !hasValidMove(teamColor)) {
             return true;
         }
         // in check
