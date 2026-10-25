@@ -86,6 +86,15 @@ public class ChessPiece {
 
     // piece move helper functions
 
+    // pawn diagonal
+    private void pawnDiagonal(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPosition, ChessPiece piece, int row, int col, boolean promo) {
+        if (board.getPiece(new ChessPosition(row, col)) != null
+                && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
+        {
+            movePawn(moves, myPosition, new ChessPosition(row, col), promo);
+        }
+    }
+
     // append pawn move with promotion
     private void movePawn (Collection<ChessMove> moves, ChessPosition start, ChessPosition end, boolean promo){
         PieceType[] promotionPieces = {PieceType.QUEEN, PieceType.ROOK, PieceType.BISHOP, PieceType.KNIGHT};
@@ -111,6 +120,14 @@ public class ChessPiece {
             {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
     };
 
+    private void moveValidationKingKnight(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPosition, ChessPiece piece, int row, int col){
+        if (board.getPiece(new ChessPosition(row, col)) == null) {
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+        } else if (board.getPiece(new ChessPosition(row, col)).getTeamColor() != piece.getTeamColor()) {
+            moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
+        }
+    }
+
     // slide
     private boolean slide(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPosition, ChessPiece piece, int row, int col){
         if (board.getPiece(new ChessPosition(row, col)) == null) {
@@ -123,7 +140,6 @@ public class ChessPiece {
             return false;
         }
     }
-
 
     // slide right
     private void slideRight(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPosition, ChessPiece piece){
@@ -227,10 +243,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         Collection<ChessMove> moves = new ArrayList<>();
-
-        // move pawn
         if (piece.getPieceType() == PieceType.PAWN) {
-
             // set direction factor
             int directionFactor;
             if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
@@ -260,24 +273,15 @@ public class ChessPiece {
             row = myPosition.getRow()+directionFactor;
             col = myPosition.getColumn()+1;
             if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
-                if (    board.getPiece(new ChessPosition(row, col)) != null
-                        && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
-                {
-                    movePawn(moves, myPosition, new ChessPosition(row, col), promo);
-                }
+                pawnDiagonal(board, moves, myPosition, piece, row, col, promo);
             }
 
             // left diagonal
             row = myPosition.getRow()+directionFactor;
             col = myPosition.getColumn()-1;
             if (row >= 1 && row < board.boardHeight && col >= 1 && col < board.boardWidth){
-                if (    board.getPiece(new ChessPosition(row, col)) != null
-                        && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
-                {
-                    movePawn(moves, myPosition, new ChessPosition(row, col), promo);
-                }
+                pawnDiagonal(board, moves, myPosition, piece, row, col, promo);
             }
-
 
             // first move
             row = myPosition.getRow()+(2*directionFactor);
@@ -287,24 +291,18 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, new ChessPosition(row,col),null));
             }
         }
-
-        // move rook
         if (piece.getPieceType() == PieceType.ROOK) {
             slideRight(board, moves, myPosition, piece);
             slideLeft(board, moves, myPosition, piece);
             slideUp(board, moves, myPosition, piece);
             slideDown(board, moves, myPosition, piece);
         }
-
-        // move bishop
         if (piece.getPieceType() == PieceType.BISHOP) {
             slideUpAndRight(board, moves, myPosition, piece);
             slideUpAndLeft(board, moves, myPosition, piece);
             slideDownAndRight(board, moves, myPosition, piece);
             slideDownAndLeft(board, moves, myPosition, piece);
         }
-
-        // move knight
         if (piece.getPieceType() == PieceType.KNIGHT) {
             int row;
             int col;
@@ -312,18 +310,10 @@ public class ChessPiece {
                 row = myPosition.getRow() + knightMove[0];
                 col = myPosition.getColumn() + knightMove[1];
                 if (row > 0 && row < board.boardHeight && col > 0 && col < board.boardWidth) {
-                    if (board.getPiece(new ChessPosition(row, col)) == null) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
-                    } else if (board.getPiece(new ChessPosition(row, col)).getTeamColor() != piece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
-                    }
+                    moveValidationKingKnight(board, moves, myPosition, piece, row, col);
                 }
-
             }
-
         }
-
-        // move king
         if (piece.getPieceType() == PieceType.KING) {
             int row;
             int col;
@@ -331,17 +321,10 @@ public class ChessPiece {
                 row = myPosition.getRow() + kingMove[0];
                 col = myPosition.getColumn() + kingMove[1];
                 if (row > 0 && row < board.boardHeight && col > 0 && col < board.boardWidth) {
-                    if (board.getPiece(new ChessPosition(row, col)) == null) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
-                    } else if (board.getPiece(new ChessPosition(row, col)).getTeamColor() != piece.getTeamColor()) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(row, col), null));
-                    }
+                    moveValidationKingKnight(board, moves, myPosition, piece, row, col);
                 }
-
             }
         }
-
-        // move queen
         if (piece.getPieceType() == PieceType.QUEEN) {
             slideUpAndRight(board, moves, myPosition, piece);
             slideUpAndLeft(board, moves, myPosition, piece);
@@ -352,7 +335,6 @@ public class ChessPiece {
             slideUp(board, moves, myPosition, piece);
             slideDown(board, moves, myPosition, piece);
         }
-
         return moves;
     }
 }
