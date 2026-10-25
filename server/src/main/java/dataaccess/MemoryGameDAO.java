@@ -22,14 +22,26 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public GameData getGame(Integer gameID) throws DataAccessException {
+        return games.get(gameID);
+    }
+
+    @Override
     public Collection<GameData> listGames() throws DataAccessException {
         return new ArrayList<>(games.values());
+    }
+
+    @Override
+    public void replaceGame(GameData game) throws DataAccessException {
+        if (!games.containsKey(game.gameID())) {
+            throw new DataAccessException("game does not exist");
+        }
+        games.put(game.gameID(), game);
     }
 
     @Override
     public void clear() throws DataAccessException {
         nextGameID = 1000;
         games.clear();
-
     }
 }

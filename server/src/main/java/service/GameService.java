@@ -53,8 +53,34 @@ public class GameService {
         return new ListGamesResult(gameList);
     }
 
-
     // join
+    public void join(JoinGameRequest joinGameRequest) throws BadRequestException, UnauthorizedException, AlreadyTakenException, DataAccessException {
+        if (authDAO.getAuth(joinGameRequest.authToken()) == null) {
+            throw new UnauthorizedException("unauthorized");
+        }
+
+        String user = authDAO.getAuth(joinGameRequest.authToken()).username();
+
+        if (joinGameRequest.gameID() == null || gameDAO.getGame(joinGameRequest.gameID()) == null) {
+            throw new BadRequestException("bad request");
+        }
+
+        if (!"WHITE".equals(joinGameRequest.playerColor()) && !"BLACK".equals(joinGameRequest.playerColor())) {
+            throw new BadRequestException("bad request");
+        }
+
+        GameData game = gameDAO.getGame(joinGameRequest.gameID());
+        GameData updatedGame;
+
+        if ("WHITE".equals(joinGameRequest.playerColor())) {
+            updatedGame = new GameData(joinGameRequest.gameID(), user, game.blackUsername(), game.gameName(), game.game());
+        } else {
+            updatedGame = new GameData(joinGameRequest.gameID(), game.whiteUsername(), user, game.gameName(), game.game());
+        }
+
+        gameDAO.replaceGame(updatedGame);
+
+    }
 
 
 }
