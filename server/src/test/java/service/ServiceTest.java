@@ -141,24 +141,110 @@ public class ServiceTest {
 
 
     // fail - unauthorized
+    @Test
+    void ListUnauthorized() throws UnauthorizedException, DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth, "game1"));
+        CreateGameResult game2 = gameService.create(new CreateGameRequest(auth, "game2"));
+
+        assertThrows(UnauthorizedException.class,
+                () -> gameService.list(auth + "1"));
+    }
 
     // CREATE
 
     // pass
+    @Test
+    void CreateValid() throws DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth, "game1"));
+
+        ListGamesResult result = gameService.list(auth);
+
+        assertEquals(1, result.games().size());
+    }
+
 
     // fail - bad request
+    @Test
+    void CreateBadRequest() throws BadRequestException, DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        assertThrows(BadRequestException.class,
+                () -> gameService.create(new CreateGameRequest(auth, null)));
+    }
 
     // fail - unauthorized
+    @Test
+    void CreateUnauthorized() throws UnauthorizedException, DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        assertThrows(UnauthorizedException.class,
+                () -> gameService.create(new CreateGameRequest(auth + "1", "game1")));
+    }
 
     // JOIN
 
     // pass
+    @Test
+    void JoinValid() throws DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth, "game1"));
+
+        gameService.join(new JoinGameRequest(auth, "WHITE", game1.gameID()));
+
+        GameData game = gameDAO.getGame(game1.gameID());
+        assertEquals("username1", game.whiteUsername());
+        assertNull(game.blackUsername());
+    }
 
     // fail - bad request
+    @Test
+    void JoinBadRequest() throws BadRequestException, DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth, "game1"));
+
+        assertThrows(BadRequestException.class,
+                () -> gameService.join(new JoinGameRequest(auth, null, game1.gameID())));
+    }
 
     // fail - unauthorized
+    @Test
+    void JoinUnauthorized() throws UnauthorizedException, DataAccessException {
+        service.LoginResult loginResult = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth = loginResult.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth, "game1"));
+
+        assertThrows(UnauthorizedException.class,
+                () -> gameService.join(new JoinGameRequest(auth + "1", "WHITE", game1.gameID())));
+    }
 
     // fail - already taken
+    @Test
+    void JoinAlreadyTaken() throws AlreadyTakenException, DataAccessException {
+        service.LoginResult loginResult1 = userService.register(new RegisterRequest("username1", "password1", "email1"));
+        String auth1 = loginResult1.authToken();
+        service.LoginResult loginResult2 = userService.register(new RegisterRequest("username2", "password2", "email2"));
+        String auth2 = loginResult2.authToken();
+
+        CreateGameResult game1 = gameService.create(new CreateGameRequest(auth1, "game1"));
+
+        gameService.join(new JoinGameRequest(auth1, "WHITE", game1.gameID()));
+
+        assertThrows(AlreadyTakenException.class,
+                () -> gameService.join(new JoinGameRequest(auth2, "WHITE", game1.gameID())));
+    }
 
 
 
