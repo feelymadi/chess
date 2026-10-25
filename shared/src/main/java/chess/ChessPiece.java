@@ -86,10 +86,23 @@ public class ChessPiece {
 
     // piece move helper functions
 
+    // spot has piece
+    private boolean hasPiece(ChessBoard board, int row, int col){
+        ChessPiece pieceOnSpot = board.getPiece(new ChessPosition(row, col));
+        return pieceOnSpot != null;
+    }
+
+    // piece on spot is opponent
+    private boolean isOpponent(ChessBoard board, int row, int col, ChessPiece piece){
+        ChessGame.TeamColor colorOnSpot = board.getPiece(new ChessPosition(row, col)).getTeamColor();
+        return colorOnSpot != piece.getTeamColor();
+    }
+
     // pawn diagonal
     private void pawnDiag(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPos, ChessPiece piece, int row, int col, boolean promo) {
-        if (board.getPiece(new ChessPosition(row, col)) != null
-                && board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor()))
+        // board.getPiece(new ChessPosition(row, col)).getTeamColor() != (piece.getTeamColor())
+        if (hasPiece(board, row, col)
+                && isOpponent(board, row, col, piece))
         {
             movePawn(moves, myPos, new ChessPosition(row, col), promo);
         }
@@ -121,19 +134,19 @@ public class ChessPiece {
     };
 
     private void moveValidationKingKnight(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPos, ChessPiece piece, int row, int col){
-        if (board.getPiece(new ChessPosition(row, col)) == null) {
+        if (!hasPiece(board, row, col)) {
             moves.add(new ChessMove(myPos, new ChessPosition(row, col), null));
-        } else if (board.getPiece(new ChessPosition(row, col)).getTeamColor() != piece.getTeamColor()) {
+        } else if (isOpponent(board, row, col, piece)) {
             moves.add(new ChessMove(myPos, new ChessPosition(row, col), null));
         }
     }
 
     // slide
     private boolean slide(ChessBoard board, Collection<ChessMove> moves,ChessPosition myPos, ChessPiece piece, int row, int col){
-        if (board.getPiece(new ChessPosition(row, col)) == null) {
+        if (!hasPiece(board, row, col)) {
             moves.add(new ChessMove(myPos, new ChessPosition(row, col), null));
             return true;
-        } else if (board.getPiece(new ChessPosition(row, col)).getTeamColor() != piece.getTeamColor()) {
+        } else if (isOpponent(board, row, col, piece)) {
             moves.add(new ChessMove(myPos, new ChessPosition(row, col), null));
             return false;
         } else {
