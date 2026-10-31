@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.exceptions.AlreadyTakenException;
 import service.exceptions.BadRequestException;
 import service.exceptions.UnauthorizedException;
@@ -52,7 +53,8 @@ public class UserService {
             throw new UnauthorizedException("user not found");
         }
 
-        if (user.password().equals(loginRequest.password())) {
+        // dependent on SQL DAO and Memory DAO
+        if (BCrypt.checkpw(loginRequest.password(), user.password())) {
             String authToken = UUID.randomUUID().toString();
             authDAO.createAuth(new AuthData(authToken, loginRequest.username()));
 

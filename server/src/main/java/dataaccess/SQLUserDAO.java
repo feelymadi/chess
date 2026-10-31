@@ -49,7 +49,8 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException {
-
+        var statement = "TRUNCATE users";
+        helper.executeUpdate(statement);
     }
 
     public void createUsersTable() throws DataAccessException {
