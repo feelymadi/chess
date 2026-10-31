@@ -1,18 +1,50 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
+    MySQLHelpers helper = new MySQLHelpers();
+
     @Override
     public void createUser(UserData user) throws DataAccessException {
+        String sqlStatement = """
+            INSERT INTO users (username, password, email)
+                VALUES (?,?,?);
+        """;
 
+        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        helper.executeUpdate(sqlStatement, user.username(), hashedPassword, user.email());
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM users WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("Failed to retrieve user", e);        }
         return null;
+    }
+
+    private UserData readUser(ResultSet rs) throws SQLException {
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String email = rs.getString("email");
+        return new UserData(username, password, email);
     }
 
     @Override

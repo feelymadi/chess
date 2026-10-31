@@ -35,7 +35,6 @@ public class Server {
             throw new RuntimeException(e);
         }
 
-
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         // initialize services
