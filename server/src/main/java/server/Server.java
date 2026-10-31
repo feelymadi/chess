@@ -61,6 +61,7 @@ public class Server {
                 ctx.status(403).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
         javalin.exception(DataAccessException.class, (e, ctx) ->
                 ctx.status(500).result(new Gson().toJson(Map.of("message", "Error: " + e.getMessage()))));
+
     }
 
     private void register(Context ctx) throws BadRequestException, AlreadyTakenException, DataAccessException {

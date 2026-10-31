@@ -62,14 +62,14 @@ public class GameService {
             throw new UnauthorizedException("unauthorized");
         }
 
+        if (joinGameRequest.gameID() == null || gameDAO.getGame(joinGameRequest.gameID()) == null) {
+            throw new BadRequestException("bad request");
+        }
+
         String user = authDAO.getAuth(joinGameRequest.authToken()).username();
         String playerColor = joinGameRequest.playerColor();
         GameData game = gameDAO.getGame(joinGameRequest.gameID());
         GameData updatedGame;
-
-        if (joinGameRequest.gameID() == null || gameDAO.getGame(joinGameRequest.gameID()) == null) {
-            throw new BadRequestException("bad request");
-        }
 
         if (!"WHITE".equals(playerColor) && !"BLACK".equals(playerColor)) {
             throw new BadRequestException("bad request");
