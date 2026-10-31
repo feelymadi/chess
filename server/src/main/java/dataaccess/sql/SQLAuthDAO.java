@@ -1,15 +1,16 @@
-package dataaccess;
+package dataaccess.sql;
 
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import model.AuthData;
-import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SQLAuthDAO implements AuthDAO{
+public class SQLAuthDAO implements AuthDAO {
     MySQLHelpers helper = new MySQLHelpers();
 
     @Override

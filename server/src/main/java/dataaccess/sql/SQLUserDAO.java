@@ -1,6 +1,8 @@
-package dataaccess;
+package dataaccess.sql;
 
-import com.google.gson.Gson;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.UserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -9,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SQLUserDAO implements UserDAO{
+public class SQLUserDAO implements UserDAO {
     MySQLHelpers helper = new MySQLHelpers();
 
     @Override
