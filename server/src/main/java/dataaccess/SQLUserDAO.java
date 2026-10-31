@@ -20,7 +20,7 @@ public class SQLUserDAO implements UserDAO{
 
     }
 
-    public void createTable() throws DataAccessException {
+    public void createUsersTable() throws DataAccessException {
         String sqlStatement = """
         CREATE TABLE IF NOT EXISTS users (
             username VARCHAR(256) NOT NULL PRIMARY KEY,

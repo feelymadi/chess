@@ -19,10 +19,22 @@ public class Server {
     private final GameService gameService;
 
     public Server() {
+
         // construct DAOs
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+        SQLUserDAO userDAO = new SQLUserDAO();
+        SQLAuthDAO authDAO = new SQLAuthDAO();
+        SQLGameDAO gameDAO = new SQLGameDAO();
+
+        // initialize Database and Tables
+        try {
+            DatabaseManager.createDatabase();
+            userDAO.createUsersTable();
+            authDAO.createAuthsTable();
+            gameDAO.createGamesTable();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
@@ -30,7 +42,6 @@ public class Server {
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(authDAO, gameDAO);
-
 
         // routes
         javalin.post("/user", this::register);
