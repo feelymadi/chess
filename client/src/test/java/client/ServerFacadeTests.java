@@ -56,6 +56,27 @@ public class ServerFacadeTests {
         );
     }
 
+    // login positive
+    @Test
+    public void loginPositive() throws ResponseException {
+        facade.register("user", "pass", "email@email.com");
+        var result = facade.login("user", "pass");
+        Assertions.assertEquals("user", result.username());
+        Assertions.assertNotNull(result.authToken());
+    }
+
+    // login negative
+    @Test
+    public void loginNegativeUnauthorized() throws ResponseException {
+        facade.register("user", "pass", "email@email.com");
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.login("user", "pass1");
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+    }
 
 
 

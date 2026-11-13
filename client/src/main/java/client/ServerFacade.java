@@ -23,6 +23,13 @@ public class ServerFacade {
         return handleResponse(response, LoginResult.class);
     }
 
+    // login
+    public LoginResult login(String username, String password) throws ResponseException {
+        var request = buildRequest("POST", "/session", new LoginRequest(username, password));
+        var response = sendRequest(request);
+        return handleResponse(response, LoginResult.class);
+    }
+
     // clear all
     public void clearAll() throws ResponseException{
         var request = buildRequest("DELETE", "/db", null);
