@@ -78,6 +78,44 @@ public class ServerFacadeTests {
         );
     }
 
+    // login negative
+    @Test
+    public void loginNegativeBadRequest() throws ResponseException {
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.login("user", "pass");
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+    }
+
+    // logout positive
+    @Test
+    public void logoutPositive() throws ResponseException {
+        var result = facade.register("user", "pass", "email@email.com");
+        facade.logout(result.authToken());
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.logout(result.authToken());
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+    }
+
+    // logout negative
+    @Test
+    public void logoutNegative() throws ResponseException {
+        facade.register("user", "pass", "email@email.com");
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.logout("probably not an auth token");
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+    }
 
 
 }
