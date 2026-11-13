@@ -9,13 +9,11 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 
 public class ServerFacade {
-    int port;
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
 
-    public ServerFacade(String url){
-        serverUrl = url;
-
+    public ServerFacade(int port) {
+        serverUrl = "http://localhost:" + port;
     }
 
     // register
@@ -25,6 +23,16 @@ public class ServerFacade {
         return handleResponse(response, LoginResult.class);
     }
 
+    // clear all
+    public void clearAll() throws ResponseException{
+        var request = buildRequest("DELETE", "/db", null);
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
+
+
+
+    // HELPER FUNCTIONS
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
