@@ -38,10 +38,10 @@ public class ServerFacade {
     }
 
     // create
-    public void create(String gameName) throws ResponseException {
-        var request = buildRequest("POST", "/game", null, authToken);
+    public CreateGameResult create(String gameName, String authToken) throws ResponseException {
+        var request = buildRequest("POST", "/game", new CreateGameRequest(authToken, gameName), authToken);
         var response = sendRequest(request);
-        handleResponse(response, null);
+        return handleResponse(response, CreateGameResult.class);
     }
 
 

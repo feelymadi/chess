@@ -117,5 +117,30 @@ public class ServerFacadeTests {
         );
     }
 
+    // create positive
+    @Test
+    public void createPositive() throws ResponseException {
+        var registerResult = facade.register("user", "pass", "email@email.com");
+        String auth = registerResult.authToken();
+
+        var createResult = facade.create("my new game", auth);
+
+        Assertions.assertNotNull(createResult);
+        Assertions.assertTrue(createResult.gameID() > 0);
+
+    }
+
+    // create negative
+    @Test
+    public void createNegative() throws ResponseException {
+        facade.register("user", "pass", "email@email.com");
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.create("my new game", "probably not an auth token");
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+    }
 
 }
