@@ -1,6 +1,5 @@
 package client;
 import com.google.gson.Gson;
-import exception.ResponseException;
 import model.*;
 
 import java.net.*;
@@ -57,7 +56,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw ResponseException.fromJson(body, status);
             }
 
             throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
