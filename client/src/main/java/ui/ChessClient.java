@@ -82,6 +82,17 @@ public class ChessClient {
                         "Please login or register before attempting to observe a game.\n");
             }
 
+            // LOGOUT REQUEST
+            if (command.equals("logout") && state == State.SIGNED_IN) {
+                StateAuthRecord result = logoutRequest(facade, authToken);
+                state = result.state();
+                authToken = result.authToken();
+            } else if  (command.equals("help") && state == State.SIGNED_IN) {
+                // state error catch
+                System.out.println("You are logged out. " +
+                        "Please login or register before attempting logout.\n");
+            }
+
             // HELP REQUEST
             if (command.equals("help") && state == State.SIGNED_OUT) {
                 System.out.print(signedOutHelpMenu);
@@ -91,6 +102,8 @@ public class ChessClient {
 
             // QUIT REQUEST (disregards state)
             if (command.equals("quit")) {
+                state = State.SIGNED_OUT;
+                authToken = null;
                 break;
             }
         }
@@ -251,6 +264,17 @@ public class ChessClient {
             // input error catch
             System.out.println("You didn't provide the correct inputs to observe a game, " +
                     "please try again in this format observe <ID>\n");
+        }
+    }
+
+    private static StateAuthRecord logoutRequest(ServerFacade facade, String authToken) {
+        try {
+            facade.logout(authToken);
+            return new StateAuthRecord(State.SIGNED_OUT, null);
+        } catch (ResponseException e) {
+            // game creation error catch
+            System.out.println(e.getMessage());
+            return new StateAuthRecord(State.SIGNED_IN, authToken);
         }
     }
 
