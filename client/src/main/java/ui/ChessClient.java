@@ -26,85 +26,97 @@ public class ChessClient {
             String[] inputs = scanner.nextLine().trim().split("\\s+");
             String command = formated(inputs[0]);
 
-            // REGISTER REQUEST
-            if (command.equals("register") && state == State.SIGNED_OUT) {
-                StateAuthRecord result = registerRequest(facade, inputs);
-                state = result.state();
-                authToken = result.authToken();
-            } else if (command.equals("register") && state == State.SIGNED_IN) {
-                System.out.println("You are already logged in. " +
-                        "Please sign out before attempting to register.\n");
-            }
+            // bad command check
+            if (Arrays.asList(validInputs).contains(command)) {
 
-            // LOGIN REQUEST
-            if (command.equals("login") && state == State.SIGNED_OUT) {
-                StateAuthRecord result = loginRequest(facade, inputs);
-                state = result.state();
-                authToken = result.authToken();
-            } else if (command.equals("login") && state == State.SIGNED_IN) {
-                System.out.println("You are already logged in. Please sign out before attempting to login.\n");
-            }
+                // REGISTER REQUEST
+                if (command.equals("register") && state == State.SIGNED_OUT) {
+                    StateAuthRecord result = registerRequest(facade, inputs);
+                    state = result.state();
+                    authToken = result.authToken();
+                } else if (command.equals("register") && state == State.SIGNED_IN) {
+                    System.out.println("You are already logged in. " +
+                            "Please sign out before attempting to register.\n");
+                }
 
-            // CREATE GAME REQUEST
-            if (command.equals("create") && state == State.SIGNED_IN) {
-                createRequest(facade, inputs, authToken);
-            } else if (command.equals("create") && state == State.SIGNED_OUT) {
-                // state error catch
-                System.out.println("You are logged out. " +
-                        "Please login or register before attempting to create a game.\n");
-            }
+                // LOGIN REQUEST
+                if (command.equals("login") && state == State.SIGNED_OUT) {
+                    StateAuthRecord result = loginRequest(facade, inputs);
+                    state = result.state();
+                    authToken = result.authToken();
+                } else if (command.equals("login") && state == State.SIGNED_IN) {
+                    System.out.println("You are already logged in. Please sign out before attempting to login.\n");
+                }
 
-            // LIST GAMES REQUEST
-            if (command.equals("list") && state == State.SIGNED_IN) {
-                listRequest(facade, authToken);
-            } else if (command.equals("list") && state == State.SIGNED_OUT) {
-                // state error catch
-                System.out.println("You are logged out. " +
-                        "Please login or register before attempting to list games.\n");
-            }
+                // CREATE GAME REQUEST
+                if (command.equals("create") && state == State.SIGNED_IN) {
+                    createRequest(facade, inputs, authToken);
+                } else if (command.equals("create") && state == State.SIGNED_OUT) {
+                    // state error catch
+                    System.out.println("You are logged out. " +
+                            "Please login or register before attempting to create a game.\n");
+                }
 
-            // PLAY GAME REQUEST
-            if (command.equals("join") && state == State.SIGNED_IN) {
-                playRequest(facade, inputs, authToken);
-            } else if (command.equals("join") && state == State.SIGNED_OUT) {
-                // state error catch
-                System.out.println("You are logged out. " +
-                        "Please login or register before attempting to join a game.\n");
-            }
+                // LIST GAMES REQUEST
+                if (command.equals("list") && state == State.SIGNED_IN) {
+                    listRequest(facade, authToken);
+                } else if (command.equals("list") && state == State.SIGNED_OUT) {
+                    // state error catch
+                    System.out.println("You are logged out. " +
+                            "Please login or register before attempting to list games.\n");
+                }
 
-            // OBSERVE GAME REQUEST
-            if (command.equals("observe") && state == State.SIGNED_IN) {
-                observeRequest(facade, inputs, authToken);
+                // PLAY GAME REQUEST
+                if (command.equals("join") && state == State.SIGNED_IN) {
+                    playRequest(facade, inputs, authToken);
+                } else if (command.equals("join") && state == State.SIGNED_OUT) {
+                    // state error catch
+                    System.out.println("You are logged out. " +
+                            "Please login or register before attempting to join a game.\n");
+                }
 
-            } else if (command.equals("observe") && state == State.SIGNED_OUT) {
-                // state error catch
-                System.out.println("You are logged out. " +
-                        "Please login or register before attempting to observe a game.\n");
-            }
+                // OBSERVE GAME REQUEST
+                if (command.equals("observe") && state == State.SIGNED_IN) {
+                    observeRequest(facade, inputs, authToken);
 
-            // LOGOUT REQUEST
-            if (command.equals("logout") && state == State.SIGNED_IN) {
-                StateAuthRecord result = logoutRequest(facade, authToken);
-                state = result.state();
-                authToken = result.authToken();
-            } else if  (command.equals("help") && state == State.SIGNED_IN) {
-                // state error catch
-                System.out.println("You are logged out. " +
-                        "Please login or register before attempting logout.\n");
-            }
+                } else if (command.equals("observe") && state == State.SIGNED_OUT) {
+                    // state error catch
+                    System.out.println("You are logged out. " +
+                            "Please login or register before attempting to observe a game.\n");
+                }
 
-            // HELP REQUEST
-            if (command.equals("help") && state == State.SIGNED_OUT) {
-                System.out.print(signedOutHelpMenu);
-            } else if  (command.equals("help") && state == State.SIGNED_IN) {
-                System.out.print(signedInHelpMenu);
-            }
+                // LOGOUT REQUEST
+                if (command.equals("logout") && state == State.SIGNED_IN) {
+                    StateAuthRecord result = logoutRequest(facade, authToken);
+                    state = result.state();
+                    authToken = result.authToken();
+                } else if  (command.equals("logout") && state == State.SIGNED_OUT) {
+                    // state error catch
+                    System.out.println("You are logged out. " +
+                            "Please login or register before attempting logout.");
+                }
 
-            // QUIT REQUEST (disregards state)
-            if (command.equals("quit")) {
-                state = State.SIGNED_OUT;
-                authToken = null;
-                break;
+                // HELP REQUEST
+                if (command.equals("help") && state == State.SIGNED_OUT) {
+                    System.out.print(signedOutHelpMenu);
+                } else if  (command.equals("help") && state == State.SIGNED_IN) {
+                    System.out.print(signedInHelpMenu);
+                }
+
+                // QUIT REQUEST (disregards state)
+                if (command.equals("quit")) {
+                    state = State.SIGNED_OUT;
+                    authToken = null;
+                    break;
+                }
+            } else {
+                // INVALID COMMAND
+                System.out.print("Please input valid command.\nHELP MENU\n");
+                if (state == State.SIGNED_OUT) {
+                    System.out.print(signedOutHelpMenu);
+                } else if (state == State.SIGNED_IN) {
+                    System.out.print(signedInHelpMenu);
+                }
             }
         }
     }
@@ -122,13 +134,18 @@ public class ChessClient {
                 return new StateAuthRecord(State.SIGNED_IN, authToken);
             } catch (ResponseException e) {
                 // sign in error
-                System.out.println("Error code: " + e.code());
-                System.out.println("Error message: " + e.getMessage());
+                if (e.code().toString().equals("AlreadyTaken")) {
+                    System.out.println("That username is taken. " +
+                            "Please try again with a different username.");
+                } else {
+                    System.out.println("Error code: " + e.code().toString());
+                    System.out.println("Error message: " + e.getMessage());
+                }
                 return new StateAuthRecord(State.SIGNED_OUT, null);
             }
         } else {
             System.out.println("You didn't provide the correct inputs to register, " +
-                    "please try again in this format register <USERNAME> <PASSWORD> <EMAIL>\n");
+                    "please try again in this format register <USERNAME> <PASSWORD> <EMAIL>");
             return new StateAuthRecord(State.SIGNED_OUT, null);
         }
     }
@@ -146,12 +163,21 @@ public class ChessClient {
                 return new StateAuthRecord(state, authToken);
             } catch (ResponseException e) {
                 // sign in error
-                System.out.println(e.getMessage());
+                if (e.getMessage().equals("Error: incorrect password")) {
+                    System.out.println("That password is incorrect. " +
+                            "Please try again.");
+                } else if (e.getMessage().equals("Error: user not found")) {
+                    System.out.println("That username is incorrect. " +
+                            "Please try again.");
+                } else {
+                    System.out.println("Error code: " + e.code().toString());
+                    System.out.println("Error message: " + e.getMessage());
+                }
                 return new StateAuthRecord(State.SIGNED_OUT, null);
             }
         } else {
             System.out.println("You didn't provide the correct inputs to login, " +
-                    "please try again in this format login <USERNAME> <PASSWORD>\n");
+                    "please try again in this format login <USERNAME> <PASSWORD>");
             return new StateAuthRecord(State.SIGNED_OUT, null);
         }
     }
@@ -170,7 +196,7 @@ public class ChessClient {
         } else {
             // input error catch
             System.out.println("You didn't provide the correct inputs to create a game, " +
-                    "please try again in this format create <GAMENAME>\n");
+                    "please try again in this format create <GAMENAME>");
         }
     }
 
@@ -225,6 +251,7 @@ public class ChessClient {
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 System.out.println("Invalid game number. " +
                         "Please enter an integer in this format join <ID> [WHITE|BLACK]");
+                listRequest(facade, authToken);
             } catch (ResponseException e) {
                 System.out.println(e.getMessage());
             }
@@ -232,7 +259,7 @@ public class ChessClient {
         } else {
             // input error catch
             System.out.println("You didn't provide the correct inputs to join a game, " +
-                    "please try again in this format join <ID> [WHITE|BLACK]\n");
+                    "please try again in this format join <ID> [WHITE|BLACK]");
         }
     }
 
@@ -279,13 +306,15 @@ public class ChessClient {
     }
 
 
-    public static String signedOutHelpMenu = """
+    public static final String[] validInputs = {"help", "quit", "login", "register", "logout", "create", "list", "join", "observe"};
+
+    public static final String signedOutHelpMenu = """
             to create an account - register <USERNAME> <PASSWORD> <EMAIL>
             to login             - login <USERNAME> <PASSWORD>
             to exit application  - quit - exit application
             to see help menu     - help\n""";
 
-    public static String signedInHelpMenu = """
+    public static final String signedInHelpMenu = """
             to create a Game     - create <GAMENAME>
             to see list of games - list
             to join a game       - join <ID> [WHITE|BLACK]
