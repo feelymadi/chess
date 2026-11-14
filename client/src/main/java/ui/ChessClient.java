@@ -1,13 +1,11 @@
 package ui;
 
-import chess.*;
-
 import java.util.Arrays;
 import java.util.Scanner;
 
+import chess.ChessGame;
 import client.ResponseException;
 import client.ServerFacade;
-import model.GameData;
 import model.GameInfo;
 import model.ListGamesResult;
 
@@ -20,15 +18,16 @@ public class ChessClient {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Welcome to CHESS! type Help to get started.\n");
         String authToken = null;
-        State state = State.SIGNEDOUT;
+        State state = State.SIGNED_OUT;
 
         while (true) {
             // INPUT
+            System.out.print("<<" + state + ">> ");
             String[] inputs = scanner.nextLine().trim().split("\\s+");
             String command = formated(inputs[0]);
 
             // REGISTER REQUEST
-            if (command.equals("register") && state == State.SIGNEDOUT) {
+            if (command.equals("register") && state == State.SIGNED_OUT) {
                 if (inputs.length == 4) {
                     String username = inputs[1];
                     String password = inputs[2];
@@ -37,7 +36,7 @@ public class ChessClient {
                         // successful sign in
                         var result = facade.register(username, password, email);
                         authToken = result.authToken();
-                        state = State.SIGNEDIN;
+                        state = State.SIGNED_IN;
                         System.out.println("Welcome " + username + "! You have successfully registered and signed in.");
                     } catch (ResponseException e) {
                         // sign in error
@@ -48,12 +47,12 @@ public class ChessClient {
                     System.out.println("You didn't provide the correct inputs to register, " +
                             "please try again in this format register <USERNAME> <PASSWORD> <EMAIL>\n");
                 }
-            } else if (command.equals("register") && state == State.SIGNEDIN) {
+            } else if (command.equals("register") && state == State.SIGNED_IN) {
                 System.out.println("You are already logged in. Please sign out before attempting to register.\n");
             }
 
             // LOGIN REQUEST
-            if (command.equals("login") && state == State.SIGNEDOUT) {
+            if (command.equals("login") && state == State.SIGNED_OUT) {
                 if (inputs.length == 3) {
                     String username = inputs[1];
                     String password = inputs[2];
@@ -61,7 +60,7 @@ public class ChessClient {
                         // successful sign in
                         var result = facade.login(username, password);
                         authToken = result.authToken();
-                        state = State.SIGNEDIN;
+                        state = State.SIGNED_IN;
                         System.out.println("Welcome back " + username + "! You have successfully signed in.");
                     } catch (ResponseException e) {
                         // sign in error
@@ -71,12 +70,12 @@ public class ChessClient {
                     System.out.println("You didn't provide the correct inputs to login, " +
                             "please try again in this format login <USERNAME> <PASSWORD>\n");
                 }
-            } else if (command.equals("login") && state == State.SIGNEDIN) {
+            } else if (command.equals("login") && state == State.SIGNED_IN) {
                 System.out.println("You are already logged in. Please sign out before attempting to login.\n");
             }
 
             // CREATE GAME REQUEST
-            if (command.equals("create") && state == State.SIGNEDIN) {
+            if (command.equals("create") && state == State.SIGNED_IN) {
                 if (inputs.length > 1) {
                     String gameName = String.join(" ", Arrays.copyOfRange(inputs, 1, inputs.length));
                     try {
@@ -92,14 +91,14 @@ public class ChessClient {
                     System.out.println("You didn't provide the correct inputs to create a game, " +
                             "please try again in this format create <GAMENAME>\n");
                 }
-            } else if (command.equals("create") && state == State.SIGNEDOUT) {
+            } else if (command.equals("create") && state == State.SIGNED_OUT) {
                 // state error catch
                 System.out.println("You are logged out. " +
                         "Please login or register before attempting to create a game.\n");
             }
 
             // LIST GAMES REQUEST
-            if (command.equals("list") && state == State.SIGNEDIN) {
+            if (command.equals("list") && state == State.SIGNED_IN) {
                 try {
                     // successful game creation
                     ListGamesResult result = facade.listGames(authToken);
@@ -114,14 +113,14 @@ public class ChessClient {
                     // game creation error catch
                     System.out.println(e.getMessage());
                 }
-            } else if (command.equals("list") && state == State.SIGNEDOUT) {
+            } else if (command.equals("list") && state == State.SIGNED_OUT) {
                 // state error catch
                 System.out.println("You are logged out. " +
                         "Please login or register before attempting to list games.\n");
             }
 
             // PLAY GAME REQUEST
-            if (command.equals("join") && state == State.SIGNEDIN) {
+            if (command.equals("join") && state == State.SIGNED_IN) {
                 if (inputs.length == 3 && (formated(inputs[2]).equals("white") || formated(inputs[2]).equals("black"))) {
 
                     // initialize values
@@ -129,9 +128,9 @@ public class ChessClient {
 
                     // store color value
                     if (formated(inputs[2]).equals("white")){
-                        playerColor = "white";
+                        playerColor = "WHITE";
                     } else if (formated(inputs[2]).equals("black")) {
-                        playerColor = "black";
+                        playerColor = "BLACK";
                     }
 
                     try {
@@ -143,6 +142,15 @@ public class ChessClient {
 
                         // successful game creation
                         facade.playGame(authToken, playerColor, gameID);
+
+                        ChessGame game = new ChessGame();
+                        ChessBoardDrawer drawer = new ChessBoardDrawer();
+
+                        if (playerColor.equals("WHITE")){
+                            drawer.drawBoard(game.getBoard(), ChessGame.TeamColor.WHITE);
+                        } else {
+                            drawer.drawBoard(game.getBoard(), ChessGame.TeamColor.BLACK);
+                        }
 
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("Invalid game number. " +
@@ -156,17 +164,56 @@ public class ChessClient {
                     System.out.println("You didn't provide the correct inputs to join a game, " +
                             "please try again in this format join <ID> [WHITE|BLACK]\n");
                 }
-            } else if (command.equals("join") && state == State.SIGNEDOUT) {
+            } else if (command.equals("join") && state == State.SIGNED_OUT) {
                 // state error catch
                 System.out.println("You are logged out. " +
                         "Please login or register before attempting to join a game.\n");
             }
 
+            // OBSERVE GAME REQUEST
+            if (command.equals("observe") && state == State.SIGNED_IN) {
+                if (inputs.length == 2) {
+
+                    try {
+                        // store game index
+                        int num = Integer.parseInt(inputs[1])-1;
+                        var result = facade.listGames(authToken);
+                        GameInfo gameInfo = result.games().get(num);
+                        int gameID = gameInfo.gameID();
+
+                        // successful game observation
+                        ChessGame game = new ChessGame();
+                        ChessBoardDrawer drawer = new ChessBoardDrawer();
+
+                        drawer.drawBoard(game.getBoard(), ChessGame.TeamColor.WHITE);
+
+
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.out.println("Invalid game number. " +
+                                "Please enter an integer in this format observe <ID> ");
+                    } catch (ResponseException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                } else {
+                    // input error catch
+                    System.out.println("You didn't provide the correct inputs to observe a game, " +
+                            "please try again in this format observe <ID>\n");
+                }
+            } else if (command.equals("observe") && state == State.SIGNED_OUT) {
+                // state error catch
+                System.out.println("You are logged out. " +
+                        "Please login or register before attempting to observe a game.\n");
+            }
+
+
+
+
 
             // HELP REQUEST
-            if (command.equals("help") && state == State.SIGNEDOUT) {
+            if (command.equals("help") && state == State.SIGNED_OUT) {
                 System.out.print(signedOutHelpMenu);
-            } else if  (command.equals("help") && state == State.SIGNEDIN) {
+            } else if  (command.equals("help") && state == State.SIGNED_IN) {
                 System.out.print(signedInHelpMenu);
             }
 
@@ -174,8 +221,6 @@ public class ChessClient {
             if (command.equals("quit")) {
                 break;
             }
-
-
         }
     }
 
