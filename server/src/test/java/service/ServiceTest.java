@@ -1,10 +1,11 @@
-package service;
+package dataaccess.sql;
 
 import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.*;
 import service.exceptions.AlreadyTakenException;
 import service.exceptions.BadRequestException;
 import service.exceptions.UnauthorizedException;
@@ -23,13 +24,15 @@ public class ServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+        userDAO = new SQLUserDAO();
+        authDAO = new SQLAuthDAO();
+        gameDAO = new SQLGameDAO();
 
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(authDAO, gameDAO);
         clearService = new ClearService(userDAO, authDAO, gameDAO);
+
+        clearService.clear();
     }
 
     // CLEAR
@@ -243,5 +246,4 @@ public class ServiceTest {
         assertThrows(AlreadyTakenException.class,
                 () -> gameService.join(new JoinGameRequest(auth2, "WHITE", game1.gameID())));
     }
-
 }
