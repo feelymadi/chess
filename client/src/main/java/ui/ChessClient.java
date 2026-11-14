@@ -7,6 +7,11 @@ import java.util.Scanner;
 
 import client.ResponseException;
 import client.ServerFacade;
+import model.GameData;
+import model.GameInfo;
+import model.ListGamesResult;
+
+import static java.lang.Math.abs;
 
 public class ChessClient {
 
@@ -36,7 +41,8 @@ public class ChessClient {
                         System.out.println("Welcome " + username + "! You have successfully registered and signed in.");
                     } catch (ResponseException e) {
                         // sign in error
-                        System.out.println(e.getMessage());
+                        System.out.println("Error code: " + e.code());
+                        System.out.println("Error message: " + e.getMessage());
                     }
                 } else {
                     System.out.println("You didn't provide the correct inputs to register, " +
@@ -76,7 +82,7 @@ public class ChessClient {
                     try {
                         // successful game creation
                         facade.create(gameName, authToken);
-                        System.out.println("You have successfully created a game called" + gameName + ".");
+                        System.out.println("You have successfully created a game named " + gameName + ".");
                     } catch (ResponseException e) {
                         // game creation error catch
                         System.out.println(e.getMessage());
@@ -91,6 +97,29 @@ public class ChessClient {
                 System.out.println("You are logged out. " +
                         "Please login or register before attempting to create a game.\n");
             }
+
+            // LIST GAMES REQUEST
+            if (command.equals("list") && state == State.SIGNEDIN) {
+                try {
+                    // successful game creation
+                    ListGamesResult result = facade.listGames(authToken);
+                    System.out.println("NUM | GAME NAME                | WHITE               | BLACK");
+                    int index = 0;
+                    for (GameInfo game : result.games()) {
+                        index++;
+                        printGameInList(index, game.gameName(), game.whiteUsername(), game.blackUsername());
+                    }
+
+                } catch (ResponseException e) {
+                    // game creation error catch
+                    System.out.println(e.getMessage());
+                }
+            } else if (command.equals("list") && state == State.SIGNEDOUT) {
+                // state error catch
+                System.out.println("You are logged out. " +
+                        "Please login or register before attempting to list games.\n");
+            }
+
 
             // HELP REQUEST
             if (command.equals("help") && state == State.SIGNEDOUT) {
@@ -122,6 +151,25 @@ public class ChessClient {
             to logout            - logout
             to exit application  - quit
             to see help menu     - help\n""";
+
+    public static void printGameInList(Integer num, String gameName, String white, String black) {
+        if (white == null) {
+            white = "none";
+        }
+
+        if (black == null) {
+            black = "none";
+        }
+
+        String paddedNum = num + " ".repeat(Math.abs(num.toString().length() - 4)) + "| ";
+        String paddedGameName = gameName + " ".repeat(Math.abs(gameName.length() - 25)) + "| ";
+        String paddedWhiteName = white + " ".repeat(Math.abs(white.length() - 20)) + "| ";
+        System.out.println(paddedNum + paddedGameName + paddedWhiteName + black);
+    }
+
+    public static String gameListHeader = """
+            NUM | GAME NAME                | WHITE               | BLACK
+            """;
 
     public static String formated(String string) {
         return string.toLowerCase().trim();
