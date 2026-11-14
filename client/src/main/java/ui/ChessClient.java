@@ -120,6 +120,48 @@ public class ChessClient {
                         "Please login or register before attempting to list games.\n");
             }
 
+            // PLAY GAME REQUEST
+            if (command.equals("join") && state == State.SIGNEDIN) {
+                if (inputs.length == 3 && (formated(inputs[2]).equals("white") || formated(inputs[2]).equals("black"))) {
+
+                    // initialize values
+                    String playerColor = null;
+
+                    // store color value
+                    if (formated(inputs[2]).equals("white")){
+                        playerColor = "white";
+                    } else if (formated(inputs[2]).equals("black")) {
+                        playerColor = "black";
+                    }
+
+                    try {
+                        // store game index
+                        int num = Integer.parseInt(inputs[1])-1;
+                        var result = facade.listGames(authToken);
+                        GameInfo gameInfo = result.games().get(num);
+                        int gameID = gameInfo.gameID();
+
+                        // successful game creation
+                        facade.playGame(authToken, playerColor, gameID);
+
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.out.println("Invalid game number. " +
+                                "Please enter an integer in this format join <ID> [WHITE|BLACK]");
+                    } catch (ResponseException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                } else {
+                    // input error catch
+                    System.out.println("You didn't provide the correct inputs to join a game, " +
+                            "please try again in this format join <ID> [WHITE|BLACK]\n");
+                }
+            } else if (command.equals("join") && state == State.SIGNEDOUT) {
+                // state error catch
+                System.out.println("You are logged out. " +
+                        "Please login or register before attempting to join a game.\n");
+            }
+
 
             // HELP REQUEST
             if (command.equals("help") && state == State.SIGNEDOUT) {
@@ -161,9 +203,9 @@ public class ChessClient {
             black = "none";
         }
 
-        String paddedNum = num + " ".repeat(Math.abs(num.toString().length() - 4)) + "| ";
-        String paddedGameName = gameName + " ".repeat(Math.abs(gameName.length() - 25)) + "| ";
-        String paddedWhiteName = white + " ".repeat(Math.abs(white.length() - 20)) + "| ";
+        String paddedNum = num + " ".repeat(abs(num.toString().length() - 4)) + "| ";
+        String paddedGameName = gameName + " ".repeat(abs(gameName.length() - 25)) + "| ";
+        String paddedWhiteName = white + " ".repeat(abs(white.length() - 20)) + "| ";
         System.out.println(paddedNum + paddedGameName + paddedWhiteName + black);
     }
 

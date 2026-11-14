@@ -53,9 +53,9 @@ public class ServerFacade {
 
     // play game
     public void playGame(String authToken, String playerColor, Integer gameID) throws ResponseException {
-        var request = buildRequest("GET", "/game", new JoinGameRequest(authToken, playerColor, gameID), authToken);
+        var request = buildRequest("PUT", "/game", new JoinGameRequest(authToken, playerColor, gameID), authToken);
         var response = sendRequest(request);
-        handleResponse(response, ListGamesResult.class);
+        handleResponse(response, null);
     }
 
     // clear all
