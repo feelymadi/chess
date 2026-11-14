@@ -143,4 +143,36 @@ public class ServerFacadeTests {
         );
     }
 
+    // list positive
+    @Test
+    public void listPositive() throws ResponseException {
+        var registerResult = facade.register("user", "pass", "email@email.com");
+        String auth = registerResult.authToken();
+        facade.create("my new game", auth);
+        facade.create("other new game", auth);
+
+        var result = facade.listGames(auth);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.games().toArray().length);
+    }
+
+    // list negative
+    @Test
+    public void listNegative() throws ResponseException {
+        var registerResult = facade.register("user", "pass", "email@email.com");
+        String auth = registerResult.authToken();
+        facade.create("my new game", auth);
+        facade.create("other new game", auth);
+
+        var exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.listGames(auth+1);
+        });
+        Assertions.assertEquals(
+                ResponseException.Code.Unauthorized,
+                exception.code()
+        );
+
+    }
+
 }

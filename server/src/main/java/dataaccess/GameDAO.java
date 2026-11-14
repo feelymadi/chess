@@ -1,10 +1,7 @@
 package dataaccess;
 
-import model.AuthData;
 import model.GameData;
-import service.ListGamesResult;
 
-import javax.xml.crypto.Data;
 import java.util.Collection;
 
 public interface GameDAO {

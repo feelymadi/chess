@@ -44,6 +44,15 @@ public class ServerFacade {
         return handleResponse(response, CreateGameResult.class);
     }
 
+    // list
+    public ListGamesResult listGames(String authToken) throws ResponseException {
+        var request = buildRequest("GET", "/game", null, authToken);
+        var response = sendRequest(request);
+        return handleResponse(response, ListGamesResult.class);
+    }
+
+    //
+
 
     // clear all
     public void clearAll() throws ResponseException{
@@ -51,7 +60,6 @@ public class ServerFacade {
         var response = sendRequest(request);
         handleResponse(response, null);
     }
-
 
 
     // HELPER FUNCTIONS
