@@ -45,14 +45,5 @@ public class ResponseException extends Exception{
             default -> Code.ServerError;
         };
     }
-
-    public int toHttpStatusCode() {
-        return switch (code) {
-            case BadRequest -> 400;
-            case Unauthorized -> 401;
-            case AlreadyTaken -> 403;
-            case ServerError -> 500;
-        };
-    }
 }
 
